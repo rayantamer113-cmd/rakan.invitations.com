@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rakan Tamer is Turning 4!</title>
+<style>
+  :root {
+    --red: #d90429;
+    --dark-red: #a4161a;
+    --blue: #1d3557;
+    --light-blue: #457b9d;
+    --yellow: #ffd166;
+    --cream: #fff8e7;
+    --white: #ffffff;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: "Trebuchet MS", "Comic Sans MS", system-ui, sans-serif;
+    background: radial-gradient(circle at 50% 30%, #457b9d 0%, #1d3557 60%, #0b1a2e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    padding: 20px;
+  }
+
+  /* Floating balloons – red & blue */
+  .balloon {
+    position: fixed;
+    bottom: -120px;
+    width: 50px;
+    height: 65px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: floatUp linear infinite;
+    opacity: 0.85;
+    z-index: 0;
+  }
+
+  .balloon::after {
+    content: "";
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    width: 2px;
+    height: 30px;
+    background: rgba(255,255,255,0.6);
+    transform: translateX(-50%);
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-55vh) rotate(5deg); }
+    100% { transform: translateY(-120vh) rotate(-5deg); }
+  }
+
+  /* Envelope stage */
+  .stage {
+    position: relative;
+    z-index: 2;
+    width: min(92vw, 620px);
+    perspective: 1200px;
+  }
+
+  .envelope {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.55 / 1;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+  }
+
+  .envelope:hover {
+    transform: translateY(-6px) scale(1.01);
+  }
+
+  /* Envelope back – dark blue */
+  .env-back {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, #1d3557, #0b1a2e);
+    border-radius: 18px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  }
+
+  /* Envelope front – red */
+  .env-front {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, #d90429, #a4161a);
+    border-radius: 18px;
+    clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  /* Envelope flap – red */
+  .env-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 58%;
+    background: linear-gradient(180deg, #ef233c, #d90429);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform 0.9s cubic-bezier(.68,-0.55,.27,1.55);
+    z-index: 4;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .envelope.open .env-flap {
+    transform: rotateX(180deg);
+  }
+
+  /* Seal – spider emblem (no name) */
+  .seal {
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ef233c, #a4161a);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    z-index: 5;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .envelope.open .seal {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+
+  .tap-hint {
+    position: absolute;
+    bottom: 14%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.92);
+    color: #1d3557;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    z-index: 6;
+    animation: pulse 1.6s infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.07); }
+  }
+
+  /* Card */
+  .card-wrap {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .card {
+    width: 88%;
+    max-height: 88%;
+    background: var(--cream);
+    /* subtle web pattern using radial lines */
+    background-image: 
+      repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 12px, rgba(29,53,87,0.06) 13px, transparent 14px),
+      repeating-linear-gradient(45deg, transparent 0, transparent 15px, rgba(29,53,87,0.06) 16px, transparent 17px);
+    border-radius: 22px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    padding: 26px 24px;
+    text-align: center;
+    transform: translateY(30px) scale(0.85);
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(.68,-0.55,.27,1.55);
+    pointer-events: none;
+    overflow-y: auto;
+    border: 3px solid var(--red);
+  }
+
+  .stage.opened .card {
+    transform: translateY(-8%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .card h1 {
+    font-size: clamp(1.7rem, 6vw, 2.8rem);
+    color: var(--dark-red);
+    line-height: 1.1;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 0 #ffe29a;
+  }
+
+  .card h2 {
+    font-size: clamp(1.1rem, 4vw, 1.5rem);
+    color: var(--blue);
+    margin-bottom: 18px;
+  }
+
+  .big-number {
+    font-size: clamp(4rem, 18vw, 7rem);
+    font-weight: 900;
+    line-height: 0.9;
+    color: var(--red);
+    text-shadow: 4px 4px 0 var(--yellow), 8px 8px 0 rgba(0,0,0,0.1);
+    margin: 6px 0 14px;
+  }
+
+  .date-pill {
+    display: inline-block;
+    background: var(--blue);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    margin-bottom: 20px;
+  }
+
+  .rsvp {
+    background: #fff;
+    border: 3px dashed var(--red);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 8px;
+  }
+
+  .rsvp p {
+    color: var(--blue);
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+
+  .contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    background: var(--red);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .contact-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    background: var(--dark-red);
+  }
+
+  .celebrate-btn {
+    margin-top: 16px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ef233c, #1d3557);
+    color: #fff;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 12px 22px;
+    border-radius: 999px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+  }
+
+  .celebrate-btn:hover {
+    transform: scale(1.06);
+  }
+
+  .celebrate-btn:active {
+    transform: scale(0.96);
+  }
+
+  /* Confetti canvas */
+  #confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .stage { width: 96vw; }
+    .card { padding: 20px 16px; }
+    .seal { width: 60px; height: 60px; font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<!-- Floating balloons – red & blue -->
+<div class="balloon" style="left: 6%; background: radial-gradient(circle at 35% 30%, #ef233c, #a4161a); animation-duration: 11s; animation-delay: 0s;"></div>
+<div class="balloon" style="left: 20%; background: radial-gradient(circle at 35% 30%, #457b9d, #1d3557); animation-duration: 14s; animation-delay: 2s;"></div>
+<div class="balloon" style="left: 78%; background: radial-gradient(circle at 35% 30%, #ef233c, #a4161a); animation-duration: 12s; animation-delay: 1s;"></div>
+<div class="balloon" style="left: 90%; background: radial-gradient(circle at 35% 30%, #457b9d, #1d3557); animation-duration: 15s; animation-delay: 3s;"></div>
+
+<div class="stage" id="stage">
+  <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Open birthday invitation">
+    <div class="env-back"></div>
+    <div class="env-front"></div>
+    <div class="env-flap"></div>
+    <div class="seal">🕷️</div>
+    <div class="tap-hint" id="tapHint">Tap to open your invitation 🎉</div>
+  </div>
+
+  <div class="card-wrap">
+    <div class="card" id="card">
+      <h1>You’re Invited!</h1>
+      <h2>Rakan Tamer is turning</h2>
+      <div class="big-number">4</div>
+      <div class="date-pill">📅 Thursday, 26 November 2026</div>
+
+      <div class="rsvp">
+        <p>Please RSVP</p>
+        <div class="contacts">
+          <a class="contact-btn" href="tel:0566133524">📞 Remaj (mom)</a>
+          <a class="contact-btn" href="tel:0566542143">📞 Tamer (dad)</a>
+        </div>
+      </div>
+
+      <button class="celebrate-btn" id="celebrateBtn">🎉 Celebrate!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const stage = document.getElementById("stage");
+  const envelope = document.getElementById("envelope");
+  const tapHint = document.getElementById("tapHint");
+  const celebrateBtn = document.getElementById("celebrateBtn");
+
+  let opened = false;
+
+  function openInvitation() {
+    if (opened) return;
+    opened = true;
+    envelope.classList.add("open");
+    stage.classList.add("opened");
+    tapHint.style.display = "none";
+    burstConfetti(140);
+  }
+
+  envelope.addEventListener("click", openInvitation);
+  envelope.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openInvitation();
+    }
+  });
+
+  celebrateBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    burstConfetti(180);
+  });
+
+  /* ---------- Confetti (red, blue, yellow, white) ---------- */
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  let particles = [];
+  let animationId = null;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  const colors = ["#d90429", "#1d3557", "#ffd166", "#457b9d", "#ffffff", "#ef233c"];
+
+  function burstConfetti(count = 120) {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 3 + Math.random() * 9;
+      particles.push({
+        x: cx + (Math.random() - 0.5) * 120,
+        y: cy + (Math.random() - 0.5) * 80,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        size: 5 + Math.random() * 8,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.3,
+        gravity: 0.12 + Math.random() * 0.08,
+        life: 1,
+        decay: 0.008 + Math.random() * 0.008,
+        shape: Math.random() > 0.5 ? "rect" : "circle"
+      });
+    }
+
+    if (!animationId) animate();
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p) => {
+      p.vy += p.gravity;
+      p.vx *= 0.995;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.rotationSpeed;
+      p.life -= p.decay;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(p.life, 0);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color;
+
+      if (p.shape === "circle") {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+      }
+
+      ctx.restore();
+    });
+
+    particles = particles.filter((p) => p.life > 0 && p.y < canvas.height + 50);
+
+    if (particles.length > 0) {
+      animationId = requestAnimationFrame(animate);
+    } else {
+      animationId = null;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+</script>
+</body>
+</html>
